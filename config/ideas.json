@@ -12,7 +12,7 @@
       ],
       "cta": "Join the waitlist"
     },
-    "qr-menu": {
+    "menu": {
       "tag": "QR Menu Manager · €9/mo",
       "headline": "Update your menu anytime. Your QR code never changes.",
       "subheadline": "Stop reprinting table cards every time your menu changes. Upload a new PDF and your existing QR code updates instantly — no new stickers, no reprinting.",
@@ -23,7 +23,7 @@
       ],
       "cta": "Get early access — €9/mo"
     },
-    "reminder": {
+    "reminders": {
       "tag": "Appointment Reminder SMS · €19/mo",
       "headline": "Stop losing money to no-shows. Send an automatic reminder SMS.",
       "subheadline": "Paste a client's number and appointment time — we send a reminder SMS automatically. No app for your clients to download, no complicated setup.",
@@ -34,7 +34,7 @@
       ],
       "cta": "Get early access — €19/mo"
     },
-    "review": {
+    "reviews": {
       "tag": "Review Request SMS · €19/mo",
       "headline": "One SMS after the job. More Google reviews. More new customers.",
       "subheadline": "After you finish a job, send one SMS asking for a Google review. Sent at exactly the right moment — when the client is happiest.",
@@ -45,7 +45,7 @@
       ],
       "cta": "Get early access — €19/mo"
     },
-    "waiver": {
+    "waivers": {
       "tag": "Digital Waiver Signing · €29/mo",
       "headline": "Ditch the paper waivers. Get signed digitally in seconds.",
       "subheadline": "Send a waiver link before the activity. Clients sign on their phone in under a minute. Signed PDFs stored automatically — no DocuSign complexity, no minimums.",
@@ -56,7 +56,7 @@
       ],
       "cta": "Get early access — €29/mo"
     },
-    "gift": {
+    "gift-cards": {
       "tag": "Gift Card Generator · €19/mo",
       "headline": "Sell gift cards from your phone. No POS system needed.",
       "subheadline": "Customers pay online and get a branded gift card PDF by email. You get the money instantly. No hardware, no monthly fees beyond the subscription.",
