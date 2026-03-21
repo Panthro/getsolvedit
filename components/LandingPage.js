@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import posthog from "posthog-js";
 import ideasConfig from "../config/ideas.json";
 
 const CheckIcon = () => (
@@ -31,7 +32,15 @@ export default function LandingPage({ slug }) {
     if (src) params.set("src", src);
     const base = `https://tally.so/r/${ideasConfig.tallyFormId}`;
     setTallyUrl(params.toString() ? `${base}?${params.toString()}` : base);
-  }, [router.isReady, router.query, slug]);
+
+    posthog.capture("landing_page_viewed", {
+      slug,
+      variant_tag: variant.tag,
+      variant_headline: variant.headline,
+      mkt: mkt || null,
+      src: src || null,
+    });
+  }, [router.isReady, router.query, slug]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
@@ -56,6 +65,13 @@ export default function LandingPage({ slug }) {
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-blue-600 font-medium hover:text-blue-700 transition-colors"
+              onClick={() =>
+                posthog.capture("waitlist_cta_clicked", {
+                  slug,
+                  position: "nav",
+                  variant_tag: variant.tag,
+                })
+              }
             >
               Join waitlist →
             </a>
@@ -99,6 +115,14 @@ export default function LandingPage({ slug }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg px-8 py-4 rounded-xl transition-colors shadow-sm"
+                onClick={() =>
+                  posthog.capture("waitlist_cta_clicked", {
+                    slug,
+                    position: "hero",
+                    variant_tag: variant.tag,
+                    cta_label: variant.cta,
+                  })
+                }
               >
                 {variant.cta}
               </a>
@@ -116,6 +140,9 @@ export default function LandingPage({ slug }) {
               <a
                 href="mailto:sara@getsolvedit.com"
                 className="text-gray-500 hover:text-gray-700 underline underline-offset-2"
+                onClick={() =>
+                  posthog.capture("contact_email_clicked", { slug })
+                }
               >
                 sara@getsolvedit.com
               </a>
