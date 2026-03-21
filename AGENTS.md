@@ -4,6 +4,17 @@ This file is the authoritative reference for any AI agent operating this project
 
 ---
 
+## Key Documents
+
+| File | Purpose |
+|---|---|
+| `AGENTS.md` | This file — quick-start reference for any agent |
+| `docs/experiment-plan.md` | Full plan: principles, phases, decision rules, signal thresholds |
+| `docs/idea-bank.csv` | All 16 ideas with scores, targets, assumptions, and agent notes |
+| `config/ideas.json` | Landing page variants — edit this to update copy, add slugs |
+
+---
+
 ## What This Project Is
 
 A lean demand-validation experiment running across 5 micro-SaaS ideas for small businesses. The goal is to identify which idea has the strongest market signal — measured by cold email reply rates and landing page waitlist signups — **before writing any product code**.

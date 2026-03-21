@@ -25,3 +25,13 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Agent-generated lead lists (contain PII — never commit)
+/leads/
+
+# Email copy is committed (useful to track what was sent)
+# /copy/ — intentionally NOT gitignored
+
+# Reports and logs are committed (measurement history)
+# /reports/ — intentionally NOT gitignored
+# /log/     — intentionally NOT gitignored
