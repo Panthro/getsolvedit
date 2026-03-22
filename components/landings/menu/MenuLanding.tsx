@@ -1,12 +1,13 @@
 "use client";
 
-import { useMemo } from "react";
 import { ideasConfig } from "@/lib/ideas";
-import { buildTallyHref } from "@/lib/tally";
 import type { CampaignQuery } from "@/lib/campaign-query";
 import { BrandLogo } from "@/components/BrandLogo";
 import { LandingAnalytics } from "../LandingAnalytics";
-import { TrackedContactEmailLink, TrackedWaitlistLink } from "../TrackedLinks";
+import {
+  TrackedContactEmailLink,
+  TrackedWaitlistCta,
+} from "../TrackedLinks";
 import { MenuQrIllustration } from "./MenuQrIllustration";
 
 export type MenuLandingProps = {
@@ -17,11 +18,6 @@ export type MenuLandingProps = {
 export function MenuLanding({ slug, campaignQuery }: MenuLandingProps) {
   const variant = ideasConfig.variants[slug] ?? ideasConfig.variants.menu;
   const { mkt, src } = campaignQuery;
-  const tallyHref = useMemo(
-    () => buildTallyHref({ slug, campaignQuery }),
-    [slug, campaignQuery]
-  );
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-stone-50 via-amber-50/40 to-stone-100 text-stone-900 flex flex-col">
       <LandingAnalytics
@@ -42,15 +38,15 @@ export function MenuLanding({ slug, campaignQuery }: MenuLandingProps) {
               </span>
             }
           />
-          <TrackedWaitlistLink
-            href={tallyHref}
+          <TrackedWaitlistCta
             slug={slug}
+            campaignQuery={campaignQuery}
             position="nav"
             variantTag={variant.tag}
-            className="text-sm font-semibold text-amber-800 hover:text-amber-900 transition-colors"
+            className="text-sm font-semibold text-amber-800 hover:text-amber-900 transition-colors bg-transparent border-0 p-0 font-inherit"
           >
             Join waitlist →
-          </TrackedWaitlistLink>
+          </TrackedWaitlistCta>
         </div>
       </header>
 
@@ -68,16 +64,16 @@ export function MenuLanding({ slug, campaignQuery }: MenuLandingProps) {
                 {variant.subheadline}
               </p>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-10">
-                <TrackedWaitlistLink
-                  href={tallyHref}
+                <TrackedWaitlistCta
                   slug={slug}
+                  campaignQuery={campaignQuery}
                   position="hero"
                   variantTag={variant.tag}
                   ctaLabel={variant.cta}
                   className="inline-flex items-center justify-center bg-amber-600 hover:bg-amber-700 text-white font-semibold text-lg px-8 py-4 rounded-xl transition-colors shadow-md shadow-amber-900/15"
                 >
                   {variant.cta}
-                </TrackedWaitlistLink>
+                </TrackedWaitlistCta>
                 <span className="text-stone-500 text-sm">
                   €9/mo · No card to browse the waitlist
                 </span>

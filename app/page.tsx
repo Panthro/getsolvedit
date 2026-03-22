@@ -1,4 +1,6 @@
 import { getLandingComponent } from "@/components/landings/registry";
+import { WaitlistModalProvider } from "@/components/WaitlistModalProvider";
+import { ideasConfig } from "@/lib/ideas";
 import { parseCampaignQuery } from "@/lib/campaign-query";
 import { resolveLandingMetadata } from "@/lib/landing-meta";
 import type { Metadata } from "next";
@@ -12,6 +14,16 @@ export default async function Home({
 }) {
   const sp = await searchParams;
   const slug = "default";
+  const campaignQuery = parseCampaignQuery(sp);
+  const variant = ideasConfig.variants.default;
   const Cmp = getLandingComponent(slug);
-  return <Cmp slug={slug} campaignQuery={parseCampaignQuery(sp)} />;
+  return (
+    <WaitlistModalProvider
+      slug={slug}
+      campaignQuery={campaignQuery}
+      variantTag={variant.tag}
+    >
+      <Cmp slug={slug} campaignQuery={campaignQuery} />
+    </WaitlistModalProvider>
+  );
 }
