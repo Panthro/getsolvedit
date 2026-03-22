@@ -91,8 +91,8 @@ Use this when the default template is not enough and you want a bespoke layout (
 
 1. Add or keep the slug under `variants` in `config/ideas.json` (required for `generateStaticParams`, metadata fallback, and analytics labels).
 2. Create a client component under `components/landings/{slug}/` that accepts `{ slug, campaignQuery }` (same props as `GenericLanding`).
-3. Use **`buildTallyHref`** from `lib/tally.ts` for every waitlist link so `idea`, `mkt`, `lang`, and `src` stay correct.
-4. Compose **`LandingAnalytics`** plus **`TrackedWaitlistLink`** / **`TrackedContactEmailLink`** so PostHog events stay unchanged (`landing_page_viewed`, `waitlist_cta_clicked`, `contact_email_clicked`).
+3. Use **`TrackedWaitlistCta`** from `components/landings/TrackedLinks.tsx` for waitlist buttons (it opens an embedded Tally modal on app routes). Under the hood this uses **`buildTallyEmbedSrc`** / **`buildTallyHref`** from `lib/tally.ts` so `idea`, `mkt`, `lang`, and `src` stay correct. New routes must wrap the landing in **`WaitlistModalProvider`** (see `app/page.tsx` and `app/[slug]/page.tsx`).
+4. Compose **`LandingAnalytics`** plus **`TrackedWaitlistCta`** / **`TrackedContactEmailLink`** so PostHog events stay unchanged (`landing_page_viewed`, `waitlist_cta_clicked`, `contact_email_clicked`).
 5. Register the slug in `components/landings/registry.tsx` (`customLandings` map).
 6. Run `pnpm build` to confirm types and static generation.
 
@@ -234,6 +234,7 @@ If open rate >35% but reply rate <2%: the problem is the email body or landing p
 ├── config/
 │   └── ideas.json             ← landing page variants + Tally form ID
 ├── components/
+│   ├── WaitlistModalProvider.tsx ← Tally embed modal + context for CTAs
 │   ├── LandingPage.tsx        ← re-exports generic landing (legacy import path)
 │   └── landings/
 │       ├── registry.tsx       ← slug → GenericLanding or custom component
@@ -246,7 +247,7 @@ If open rate >35% but reply rate <2%: the problem is the email body or landing p
 │       └── gift-cards/GiftCardsLanding.tsx
 ├── lib/
 │   ├── ideas.ts               ← typed access to ideas.json
-│   ├── tally.ts               ← buildTallyHref (Tally hidden fields)
+│   ├── tally.ts               ← buildTallyHref, buildTallyEmbedSrc (hidden fields)
 │   ├── landing-meta.ts        ← page title/description (JSON + optional overrides)
 │   └── campaign-query.ts      ← normalize URL search params for Tally
 ├── types/

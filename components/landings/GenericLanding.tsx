@@ -1,12 +1,13 @@
 "use client";
 
-import { useMemo } from "react";
 import { ideasConfig } from "@/lib/ideas";
-import { buildTallyHref } from "@/lib/tally";
 import type { CampaignQuery } from "@/lib/campaign-query";
 import { BrandLogo } from "@/components/BrandLogo";
 import { LandingAnalytics } from "./LandingAnalytics";
-import { TrackedContactEmailLink, TrackedWaitlistLink } from "./TrackedLinks";
+import {
+  TrackedContactEmailLink,
+  TrackedWaitlistCta,
+} from "./TrackedLinks";
 
 function CheckIcon() {
   return (
@@ -31,11 +32,6 @@ export function GenericLanding({ slug, campaignQuery }: GenericLandingProps) {
   const variant = ideasConfig.variants[slug] ?? ideasConfig.variants.default;
   const { mkt, src } = campaignQuery;
 
-  const tallyHref = useMemo(
-    () => buildTallyHref({ slug, campaignQuery }),
-    [slug, campaignQuery]
-  );
-
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <LandingAnalytics
@@ -49,15 +45,15 @@ export function GenericLanding({ slug, campaignQuery }: GenericLandingProps) {
       <nav className="border-b border-gray-100 px-6 py-4">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <BrandLogo tone="light" />
-          <TrackedWaitlistLink
-            href={tallyHref}
+          <TrackedWaitlistCta
             slug={slug}
+            campaignQuery={campaignQuery}
             position="nav"
             variantTag={variant.tag}
-            className="text-sm text-blue-600 font-medium hover:text-blue-700 transition-colors"
+            className="text-sm text-blue-600 font-medium hover:text-blue-700 transition-colors bg-transparent border-0 p-0 font-inherit"
           >
             Join waitlist →
-          </TrackedWaitlistLink>
+          </TrackedWaitlistCta>
         </div>
       </nav>
 
@@ -85,16 +81,16 @@ export function GenericLanding({ slug, campaignQuery }: GenericLandingProps) {
           </ul>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <TrackedWaitlistLink
-              href={tallyHref}
+            <TrackedWaitlistCta
               slug={slug}
+              campaignQuery={campaignQuery}
               position="hero"
               variantTag={variant.tag}
               ctaLabel={variant.cta}
               className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg px-8 py-4 rounded-xl transition-colors shadow-sm"
             >
               {variant.cta}
-            </TrackedWaitlistLink>
+            </TrackedWaitlistCta>
             <span className="text-gray-400 text-sm">No credit card · Cancel anytime</span>
           </div>
         </div>

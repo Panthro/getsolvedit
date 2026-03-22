@@ -1,12 +1,13 @@
 "use client";
 
-import { useMemo } from "react";
 import { ideasConfig } from "@/lib/ideas";
-import { buildTallyHref } from "@/lib/tally";
 import type { CampaignQuery } from "@/lib/campaign-query";
 import { BrandLogo } from "@/components/BrandLogo";
 import { LandingAnalytics } from "../LandingAnalytics";
-import { TrackedContactEmailLink, TrackedWaitlistLink } from "../TrackedLinks";
+import {
+  TrackedContactEmailLink,
+  TrackedWaitlistCta,
+} from "../TrackedLinks";
 
 export type RemindersLandingProps = {
   slug: string;
@@ -48,11 +49,6 @@ function CalendarCard() {
 export function RemindersLanding({ slug, campaignQuery }: RemindersLandingProps) {
   const variant = ideasConfig.variants[slug] ?? ideasConfig.variants.reminders;
   const { mkt, src } = campaignQuery;
-  const tallyHref = useMemo(
-    () => buildTallyHref({ slug, campaignQuery }),
-    [slug, campaignQuery]
-  );
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-teal-50/80 to-slate-50 text-slate-900 flex flex-col">
       <LandingAnalytics
@@ -73,15 +69,15 @@ export function RemindersLanding({ slug, campaignQuery }: RemindersLandingProps)
               </span>
             }
           />
-          <TrackedWaitlistLink
-            href={tallyHref}
+          <TrackedWaitlistCta
             slug={slug}
+            campaignQuery={campaignQuery}
             position="nav"
             variantTag={variant.tag}
-            className="text-sm font-semibold text-teal-700 hover:text-teal-800 transition-colors"
+            className="text-sm font-semibold text-teal-700 hover:text-teal-800 transition-colors bg-transparent border-0 p-0 font-inherit"
           >
             Join waitlist →
-          </TrackedWaitlistLink>
+          </TrackedWaitlistCta>
         </div>
       </header>
 
@@ -98,16 +94,16 @@ export function RemindersLanding({ slug, campaignQuery }: RemindersLandingProps)
               <p className="text-lg text-slate-600 leading-relaxed mb-8 max-w-xl">
                 {variant.subheadline}
               </p>
-              <TrackedWaitlistLink
-                href={tallyHref}
+              <TrackedWaitlistCta
                 slug={slug}
+                campaignQuery={campaignQuery}
                 position="hero"
                 variantTag={variant.tag}
                 ctaLabel={variant.cta}
                 className="inline-flex items-center justify-center bg-teal-700 hover:bg-teal-800 text-white font-semibold text-lg px-8 py-4 rounded-xl transition-colors shadow-lg shadow-teal-900/15 mb-10"
               >
                 {variant.cta}
-              </TrackedWaitlistLink>
+              </TrackedWaitlistCta>
               <ul className="space-y-4">
                 {variant.benefits.map((line, i) => (
                   <li key={i} className="flex gap-3 items-start text-slate-700">
