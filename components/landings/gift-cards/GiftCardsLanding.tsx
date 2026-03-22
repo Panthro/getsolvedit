@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { ideasConfig } from "@/lib/ideas";
 import { buildTallyHref } from "@/lib/tally";
 import type { CampaignQuery } from "@/lib/campaign-query";
+import { BrandLogo } from "@/components/BrandLogo";
 import { LandingAnalytics } from "../LandingAnalytics";
 import { TrackedContactEmailLink, TrackedWaitlistLink } from "../TrackedLinks";
 
@@ -49,10 +50,14 @@ export function GiftCardsLanding({ slug, campaignQuery }: GiftCardsLandingProps)
 
       <header className="border-b border-rose-900/40 px-5 sm:px-8 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-baseline gap-2">
-            <span className="font-semibold text-rose-100 tracking-tight text-lg">getsolvedit</span>
-            <span className="hidden sm:inline text-rose-400/70 text-sm">Gift cards</span>
-          </div>
+          <BrandLogo
+            tone="dark"
+            suffix={
+              <span className="hidden sm:inline text-rose-400/70 text-sm font-normal font-sans">
+                Gift cards
+              </span>
+            }
+          />
           <TrackedWaitlistLink
             href={tallyHref}
             slug={slug}
@@ -106,7 +111,10 @@ export function GiftCardsLanding({ slug, campaignQuery }: GiftCardsLandingProps)
 
       <footer className="border-t border-rose-900/40 px-5 sm:px-8 py-8 mt-auto">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-rose-400/70 text-sm">
-          <span>© 2025 getsolvedit</span>
+          <span className="inline-flex items-baseline gap-1.5">
+            <span>© 2025</span>
+            <BrandLogo tone="mutedDark" size="sm" />
+          </span>
           <span>
             Questions?{" "}
             <TrackedContactEmailLink

@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { ideasConfig } from "@/lib/ideas";
 import { buildTallyHref } from "@/lib/tally";
 import type { CampaignQuery } from "@/lib/campaign-query";
+import { BrandLogo } from "@/components/BrandLogo";
 import { LandingAnalytics } from "../LandingAnalytics";
 import { TrackedContactEmailLink, TrackedWaitlistLink } from "../TrackedLinks";
 
@@ -62,12 +63,14 @@ export function WaiversLanding({ slug, campaignQuery }: WaiversLandingProps) {
 
       <header className="border-b border-emerald-900/40 px-5 sm:px-8 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-baseline gap-2">
-            <span className="font-semibold text-emerald-100 tracking-tight text-lg">
-              getsolvedit
-            </span>
-            <span className="hidden sm:inline text-emerald-600/80 text-sm">Waivers</span>
-          </div>
+          <BrandLogo
+            tone="dark"
+            suffix={
+              <span className="hidden sm:inline text-emerald-600/80 text-sm font-normal font-sans">
+                Waivers
+              </span>
+            }
+          />
           <TrackedWaitlistLink
             href={tallyHref}
             slug={slug}
@@ -127,7 +130,10 @@ export function WaiversLanding({ slug, campaignQuery }: WaiversLandingProps) {
 
       <footer className="border-t border-emerald-900/40 px-5 sm:px-8 py-8 mt-auto">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-emerald-700 text-sm">
-          <span className="text-emerald-600/90">© 2025 getsolvedit</span>
+          <span className="text-emerald-600/90 inline-flex items-baseline gap-1.5">
+            <span>© 2025</span>
+            <BrandLogo tone="mutedDark" size="sm" />
+          </span>
           <span>
             Questions?{" "}
             <TrackedContactEmailLink

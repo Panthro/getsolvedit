@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { ideasConfig } from "@/lib/ideas";
 import { buildTallyHref } from "@/lib/tally";
 import type { CampaignQuery } from "@/lib/campaign-query";
+import { BrandLogo } from "@/components/BrandLogo";
 import { LandingAnalytics } from "../LandingAnalytics";
 import { TrackedContactEmailLink, TrackedWaitlistLink } from "../TrackedLinks";
 
@@ -50,12 +51,14 @@ export function MenuLanding({ slug, campaignQuery }: MenuLandingProps) {
 
       <header className="border-b border-amber-900/30 px-5 sm:px-8 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-amber-400/90 font-semibold tracking-tight text-lg">
-              getsolvedit
-            </span>
-            <span className="hidden sm:inline text-stone-500 text-sm">· QR Menu</span>
-          </div>
+          <BrandLogo
+            tone="dark"
+            suffix={
+              <span className="hidden sm:inline text-stone-500 text-sm font-normal font-sans">
+                · QR Menu
+              </span>
+            }
+          />
           <TrackedWaitlistLink
             href={tallyHref}
             slug={slug}
@@ -127,7 +130,10 @@ export function MenuLanding({ slug, campaignQuery }: MenuLandingProps) {
 
       <footer className="border-t border-stone-800 px-5 sm:px-8 py-8 mt-auto">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-stone-500 text-sm">
-          <span>© 2025 getsolvedit</span>
+          <span className="inline-flex items-baseline gap-1.5">
+            <span>© 2025</span>
+            <BrandLogo tone="mutedDark" size="sm" />
+          </span>
           <span>
             Questions?{" "}
             <TrackedContactEmailLink

@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { ideasConfig } from "@/lib/ideas";
 import { buildTallyHref } from "@/lib/tally";
 import type { CampaignQuery } from "@/lib/campaign-query";
+import { BrandLogo } from "@/components/BrandLogo";
 import { LandingAnalytics } from "./LandingAnalytics";
 import { TrackedContactEmailLink, TrackedWaitlistLink } from "./TrackedLinks";
 
@@ -47,9 +48,7 @@ export function GenericLanding({ slug, campaignQuery }: GenericLandingProps) {
 
       <nav className="border-b border-gray-100 px-6 py-4">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <span className="text-gray-900 font-semibold text-lg tracking-tight">
-            getsolvedit
-          </span>
+          <BrandLogo tone="light" />
           <TrackedWaitlistLink
             href={tallyHref}
             slug={slug}
@@ -103,7 +102,10 @@ export function GenericLanding({ slug, campaignQuery }: GenericLandingProps) {
 
       <footer className="border-t border-gray-100 px-6 py-6">
         <div className="max-w-2xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span className="text-gray-400 text-sm">© 2025 getsolvedit</span>
+          <span className="text-gray-400 text-sm inline-flex items-baseline gap-1.5">
+            <span>© 2025</span>
+            <BrandLogo tone="mutedLight" size="sm" />
+          </span>
           <span className="text-gray-400 text-sm">
             Questions?{" "}
             <TrackedContactEmailLink

@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { ideasConfig } from "@/lib/ideas";
 import { buildTallyHref } from "@/lib/tally";
 import type { CampaignQuery } from "@/lib/campaign-query";
+import { BrandLogo } from "@/components/BrandLogo";
 import { LandingAnalytics } from "../LandingAnalytics";
 import { TrackedContactEmailLink, TrackedWaitlistLink } from "../TrackedLinks";
 
@@ -64,10 +65,14 @@ export function RemindersLanding({ slug, campaignQuery }: RemindersLandingProps)
 
       <header className="border-b border-teal-900/10 bg-white/70 backdrop-blur-sm px-5 sm:px-8 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-baseline gap-2">
-            <span className="font-semibold text-teal-900 tracking-tight text-lg">getsolvedit</span>
-            <span className="hidden sm:inline text-slate-500 text-sm">Reminders</span>
-          </div>
+          <BrandLogo
+            tone="light"
+            suffix={
+              <span className="hidden sm:inline text-slate-500 text-sm font-normal font-sans">
+                Reminders
+              </span>
+            }
+          />
           <TrackedWaitlistLink
             href={tallyHref}
             slug={slug}
@@ -129,7 +134,10 @@ export function RemindersLanding({ slug, campaignQuery }: RemindersLandingProps)
 
       <footer className="border-t border-teal-900/10 bg-white/80 px-5 sm:px-8 py-8 mt-auto">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-slate-500 text-sm">
-          <span>© 2025 getsolvedit</span>
+          <span className="inline-flex items-baseline gap-1.5">
+            <span>© 2025</span>
+            <BrandLogo tone="mutedLight" size="sm" />
+          </span>
           <span>
             Questions?{" "}
             <TrackedContactEmailLink
