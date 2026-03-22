@@ -1,5 +1,6 @@
-import { LandingPage } from "@/components/LandingPage";
+import { getLandingComponent } from "@/components/landings/registry";
 import { ideasConfig } from "@/lib/ideas";
+import { resolveLandingMetadata } from "@/lib/landing-meta";
 import { parseCampaignQuery } from "@/lib/campaign-query";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -16,15 +17,10 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const variant = ideasConfig.variants[slug];
-  if (!variant) {
+  if (!ideasConfig.variants[slug]) {
     return {};
   }
-  return {
-    title: `getsolvedit — ${variant.headline}`,
-    description: variant.subheadline,
-    robots: { index: false, follow: false },
-  };
+  return resolveLandingMetadata(slug);
 }
 
 export default async function SlugPage({
@@ -39,5 +35,6 @@ export default async function SlugPage({
     notFound();
   }
   const sp = await searchParams;
-  return <LandingPage slug={slug} campaignQuery={parseCampaignQuery(sp)} />;
+  const Cmp = getLandingComponent(slug);
+  return <Cmp slug={slug} campaignQuery={parseCampaignQuery(sp)} />;
 }

@@ -64,7 +64,7 @@ TALLY_WEBHOOK_SECRET     — Tally webhook secret for verifying submissions
 
 ### How it works
 
-The landing page reads the URL slug and renders the matching variant from `config/ideas.json`. All remaining URL params (`mkt`, `lang`, `src`) pass through to the Tally form as hidden fields.
+The URL slug selects a variant from `config/ideas.json` for **SSG paths and metadata**. The **UI** is resolved through a small registry: slugs with a custom component get a product-style page; all others use the shared generic template. URL params (`mkt`, `lang`, `src`) pass through to the Tally form as hidden fields.
 
 - `getsolvedit.com/` → default variant
 - `getsolvedit.com/{slug}?mkt=es&lang=es&src=cold-email` → campaign variant
@@ -83,7 +83,22 @@ Edit `config/ideas.json`. Each entry requires:
 }
 ```
 
-Then commit and push to `main` — Vercel redeploys automatically. No other changes needed.
+Then commit and push to `main` — Vercel redeploys automatically. For a **generic** landing only, no other changes are needed.
+
+### Custom product-ready landings (per idea)
+
+Use this when the default template is not enough and you want a bespoke layout (see `components/landings/menu/MenuLanding.tsx` as reference).
+
+1. Add or keep the slug under `variants` in `config/ideas.json` (required for `generateStaticParams`, metadata fallback, and analytics labels).
+2. Create a client component under `components/landings/{slug}/` that accepts `{ slug, campaignQuery }` (same props as `GenericLanding`).
+3. Use **`buildTallyHref`** from `lib/tally.ts` for every waitlist link so `idea`, `mkt`, `lang`, and `src` stay correct.
+4. Compose **`LandingAnalytics`** plus **`TrackedWaitlistLink`** / **`TrackedContactEmailLink`** so PostHog events stay unchanged (`landing_page_viewed`, `waitlist_cta_clicked`, `contact_email_clicked`).
+5. Register the slug in `components/landings/registry.tsx` (`customLandings` map).
+6. Run `pnpm build` to confirm types and static generation.
+
+**Metadata:** `generateMetadata` uses copy from `ideas.json` by default. If the on-page hero diverges from JSON, add an entry for that slug in `metadataOverrides` inside `lib/landing-meta.ts`.
+
+For visual polish, use the project’s Tailwind setup; optional: frontend-design skill for layout and typography.
 
 ### Updating the Tally form ID
 
@@ -219,9 +234,16 @@ If open rate >35% but reply rate <2%: the problem is the email body or landing p
 ├── config/
 │   └── ideas.json             ← landing page variants + Tally form ID
 ├── components/
-│   └── LandingPage.tsx        ← client UI (PostHog + Tally links)
+│   ├── LandingPage.tsx        ← re-exports generic landing (legacy import path)
+│   └── landings/
+│       ├── registry.tsx       ← slug → GenericLanding or custom component
+│       ├── GenericLanding.tsx ← default template (ideas.json copy)
+│       ├── LandingAnalytics.tsx, TrackedLinks.tsx ← PostHog + Tally helpers
+│       └── menu/MenuLanding.tsx ← example custom landing
 ├── lib/
 │   ├── ideas.ts               ← typed access to ideas.json
+│   ├── tally.ts               ← buildTallyHref (Tally hidden fields)
+│   ├── landing-meta.ts        ← page title/description (JSON + optional overrides)
 │   └── campaign-query.ts      ← normalize URL search params for Tally
 ├── types/
 │   └── ideas.ts               ← JSON shape types

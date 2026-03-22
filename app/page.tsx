@@ -1,15 +1,9 @@
-import { LandingPage } from "@/components/LandingPage";
-import { ideasConfig } from "@/lib/ideas";
+import { getLandingComponent } from "@/components/landings/registry";
 import { parseCampaignQuery } from "@/lib/campaign-query";
+import { resolveLandingMetadata } from "@/lib/landing-meta";
 import type { Metadata } from "next";
 
-const variant = ideasConfig.variants.default;
-
-export const metadata: Metadata = {
-  title: `getsolvedit — ${variant.headline}`,
-  description: variant.subheadline,
-  robots: { index: false, follow: false },
-};
+export const metadata: Metadata = resolveLandingMetadata("default");
 
 export default async function Home({
   searchParams,
@@ -17,7 +11,7 @@ export default async function Home({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const sp = await searchParams;
-  return (
-    <LandingPage slug="default" campaignQuery={parseCampaignQuery(sp)} />
-  );
+  const slug = "default";
+  const Cmp = getLandingComponent(slug);
+  return <Cmp slug={slug} campaignQuery={parseCampaignQuery(sp)} />;
 }
