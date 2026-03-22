@@ -34,7 +34,7 @@ One domain, one email persona, one landing page, one Tally form. All 8 campaigns
 | Tool | Purpose | Notes |
 |---|---|---|
 | **Vercel** | Landing page hosting | Free tier. Auto-deploys on push to `main`. Custom domain: getsolvedit.com |
-| **Next.js (Pages Router)** | Landing page framework | Slug-based routing. One page per campaign variant. |
+| **Next.js (App Router, TypeScript)** | Landing page framework | Slug-based routing. One route per campaign variant. |
 | **Google Workspace** | Sara's email inbox | sara@getsolvedit.com. Business Starter plan. |
 | **Instantly.ai** | Cold email sending + warm-up | Sara's inbox connected. Warm-up must run 14 days before first send. |
 | **Apollo.io** | Lead prospecting | Free tier (50 exports/month). Used to build lead lists per campaign. |
@@ -212,14 +212,19 @@ If open rate >35% but reply rate <2%: the problem is the email body or landing p
 ```
 /
 ├── AGENTS.md                  ← this file
+├── app/
+│   ├── layout.tsx             ← root layout + global CSS
+│   ├── page.tsx               ← default landing (getsolvedit.com/)
+│   └── [slug]/page.tsx        ← campaign variants (SSG)
 ├── config/
 │   └── ideas.json             ← landing page variants + Tally form ID
-├── pages/
-│   ├── index.js               ← default landing page (getsolvedit.com/)
-│   ├── [slug].js              ← dynamic campaign pages
-│   └── _app.js
 ├── components/
-│   └── LandingPage.js         ← shared page component (PostHog + Tally logic)
+│   └── LandingPage.tsx        ← client UI (PostHog + Tally links)
+├── lib/
+│   ├── ideas.ts               ← typed access to ideas.json
+│   └── campaign-query.ts      ← normalize URL search params for Tally
+├── types/
+│   └── ideas.ts               ← JSON shape types
 ├── styles/
 │   └── globals.css
 ├── leads/                     ← agent-generated lead CSVs (gitignored)
