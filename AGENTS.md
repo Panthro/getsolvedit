@@ -87,7 +87,7 @@ Then commit and push to `main` — Vercel redeploys automatically. For a **gener
 
 ### Custom product-ready landings (per idea)
 
-Use this when the default template is not enough and you want a bespoke layout (see `components/landings/menu/MenuLanding.tsx` as reference).
+Use this when the default template is not enough and you want a bespoke layout (see any file under `components/landings/{slug}/` — e.g. `menu/MenuLanding.tsx` — as reference).
 
 1. Add or keep the slug under `variants` in `config/ideas.json` (required for `generateStaticParams`, metadata fallback, and analytics labels).
 2. Create a client component under `components/landings/{slug}/` that accepts `{ slug, campaignQuery }` (same props as `GenericLanding`).
@@ -239,7 +239,11 @@ If open rate >35% but reply rate <2%: the problem is the email body or landing p
 │       ├── registry.tsx       ← slug → GenericLanding or custom component
 │       ├── GenericLanding.tsx ← default template (ideas.json copy)
 │       ├── LandingAnalytics.tsx, TrackedLinks.tsx ← PostHog + Tally helpers
-│       └── menu/MenuLanding.tsx ← example custom landing
+│       ├── menu/MenuLanding.tsx
+│       ├── reminders/RemindersLanding.tsx
+│       ├── reviews/ReviewsLanding.tsx
+│       ├── waivers/WaiversLanding.tsx
+│       └── gift-cards/GiftCardsLanding.tsx
 ├── lib/
 │   ├── ideas.ts               ← typed access to ideas.json
 │   ├── tally.ts               ← buildTallyHref (Tally hidden fields)

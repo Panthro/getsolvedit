@@ -28,7 +28,7 @@ export type GenericLandingProps = {
 
 export function GenericLanding({ slug, campaignQuery }: GenericLandingProps) {
   const variant = ideasConfig.variants[slug] ?? ideasConfig.variants.default;
-  const { mkt, lang, src } = campaignQuery;
+  const { mkt, src } = campaignQuery;
 
   const tallyHref = useMemo(
     () => buildTallyHref({ slug, campaignQuery }),

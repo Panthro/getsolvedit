@@ -32,7 +32,7 @@ function QrTile() {
 
 export function MenuLanding({ slug, campaignQuery }: MenuLandingProps) {
   const variant = ideasConfig.variants[slug] ?? ideasConfig.variants.menu;
-  const { mkt, lang, src } = campaignQuery;
+  const { mkt, src } = campaignQuery;
   const tallyHref = useMemo(
     () => buildTallyHref({ slug, campaignQuery }),
     [slug, campaignQuery]
