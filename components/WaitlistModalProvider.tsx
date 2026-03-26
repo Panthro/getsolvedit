@@ -1,16 +1,27 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import {
   createContext,
   useCallback,
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import posthog from "posthog-js";
+import { DocumentLang } from "@/components/DocumentLang";
 import type { CampaignQuery } from "@/lib/campaign-query";
 import { buildTallyEmbedSrc } from "@/lib/tally";
+
+const WaitlistModalDialog = dynamic(
+  () =>
+    import("./WaitlistModalDialog").then((m) => ({
+      default: m.WaitlistModalDialog,
+    })),
+  { ssr: false }
+);
 
 type OpenArgs = {
   position: "nav" | "hero";
@@ -24,6 +35,24 @@ type WaitlistModalContextValue = {
 const WaitlistModalContext = createContext<WaitlistModalContextValue | null>(
   null
 );
+
+function getFocusableElements(container: HTMLElement): HTMLElement[] {
+  const selector = [
+    "button:not([disabled])",
+    "[href]",
+    "input:not([disabled])",
+    "select:not([disabled])",
+    "textarea:not([disabled])",
+    "iframe",
+    '[tabindex]:not([tabindex="-1"])',
+  ].join(", ");
+
+  return Array.from(container.querySelectorAll<HTMLElement>(selector)).filter(
+    (el) =>
+      !el.closest("[aria-hidden=\"true\"]") &&
+      !(el.hasAttribute("tabindex") && el.tabIndex < 0)
+  );
+}
 
 export function useWaitlistModal(): WaitlistModalContextValue | null {
   return useContext(WaitlistModalContext);
@@ -43,14 +72,30 @@ export function WaitlistModalProvider({
   children,
 }: WaitlistModalProviderProps) {
   const [open, setOpen] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
 
   const embedSrc = useMemo(
     () => buildTallyEmbedSrc({ slug, campaignQuery }),
     [slug, campaignQuery]
   );
 
+  const close = useCallback(() => {
+    setOpen(false);
+    const trigger = triggerRef.current;
+    triggerRef.current = null;
+    queueMicrotask(() => {
+      if (trigger?.isConnected) {
+        trigger.focus({ preventScroll: true });
+      }
+    });
+  }, []);
+
   const openWaitlist = useCallback(
     (args: OpenArgs) => {
+      const active = document.activeElement;
+      triggerRef.current = active instanceof HTMLElement ? active : null;
       posthog.capture("waitlist_cta_clicked", {
         slug,
         position: args.position,
@@ -62,19 +107,45 @@ export function WaitlistModalProvider({
     [slug, variantTag]
   );
 
-  const close = useCallback(() => setOpen(false), []);
-
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
-    };
-    document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
+
+    const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        close();
+        return;
+      }
+      if (e.key !== "Tab") return;
+
+      const root = dialogRef.current;
+      if (!root) return;
+
+      const list = getFocusableElements(root);
+      if (list.length === 0) return;
+
+      const first = list[0];
+      const last = list[list.length - 1];
+      const active = document.activeElement;
+
+      if (e.shiftKey) {
+        if (active === first || !root.contains(active)) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else if (active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown, true);
     return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
+      document.removeEventListener("keydown", onKeyDown, true);
+      document.body.style.overflow = prevOverflow;
     };
   }, [open, close]);
 
@@ -82,44 +153,15 @@ export function WaitlistModalProvider({
 
   return (
     <WaitlistModalContext.Provider value={value}>
+      <DocumentLang lang={campaignQuery.lang} />
       {children}
       {open ? (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-stone-900/60 backdrop-blur-[2px]"
-          role="presentation"
-          onClick={close}
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="waitlist-modal-title"
-            className="relative flex w-full max-w-lg max-h-[min(90vh,720px)] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-stone-200"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <header className="flex shrink-0 items-center justify-between gap-3 border-b border-stone-200 px-4 py-3 sm:px-5">
-              <h2
-                id="waitlist-modal-title"
-                className="text-base font-semibold text-stone-900"
-              >
-                Join the waitlist
-              </h2>
-              <button
-                type="button"
-                onClick={close}
-                className="rounded-lg px-3 py-1.5 text-sm font-medium text-stone-600 hover:bg-stone-100 hover:text-stone-900 transition-colors"
-              >
-                Close
-              </button>
-            </header>
-            <div className="min-h-0 flex-1 overflow-y-auto">
-              <iframe
-                src={embedSrc}
-                title="Waitlist form"
-                className="block w-full min-h-[480px] border-0"
-              />
-            </div>
-          </div>
-        </div>
+        <WaitlistModalDialog
+          embedSrc={embedSrc}
+          onClose={close}
+          dialogRef={dialogRef}
+          closeButtonRef={closeButtonRef}
+        />
       ) : null}
     </WaitlistModalContext.Provider>
   );

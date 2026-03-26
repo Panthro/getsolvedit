@@ -5,9 +5,12 @@ import type { CampaignQuery } from "@/lib/campaign-query";
 import { BrandLogo } from "@/components/BrandLogo";
 import { LandingAnalytics } from "../LandingAnalytics";
 import {
-  TrackedContactEmailLink,
-  TrackedWaitlistCta,
-} from "../TrackedLinks";
+  LandingDotBenefitsList,
+  LandingFooter,
+  LandingHeader,
+  LandingMainWide,
+} from "../primitives";
+import { TrackedWaitlistCta } from "../TrackedLinks";
 import { MenuQrIllustration } from "./MenuQrIllustration";
 
 export type MenuLandingProps = {
@@ -19,7 +22,7 @@ export function MenuLanding({ slug, campaignQuery }: MenuLandingProps) {
   const variant = ideasConfig.variants[slug] ?? ideasConfig.variants.menu;
   const { mkt, src } = campaignQuery;
   return (
-    <div className="min-h-screen bg-gradient-to-b from-stone-50 via-amber-50/40 to-stone-100 text-stone-900 flex flex-col">
+    <div className="flex min-h-screen flex-col bg-gradient-to-b from-stone-50 via-amber-50/40 to-stone-100 text-stone-900">
       <LandingAnalytics
         slug={slug}
         variantTag={variant.tag}
@@ -28,105 +31,88 @@ export function MenuLanding({ slug, campaignQuery }: MenuLandingProps) {
         src={src}
       />
 
-      <header className="border-b border-stone-200/90 bg-white/80 backdrop-blur-sm px-5 sm:px-8 py-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
-          <BrandLogo
-            tone="light"
-            suffix={
-              <span className="hidden sm:inline text-stone-500 text-sm font-normal font-sans">
-                · QR Menu
+      <LandingHeader className="border-b border-stone-200/90 bg-white/80 backdrop-blur-sm">
+        <BrandLogo
+          tone="light"
+          suffix={
+            <span className="hidden font-sans text-sm font-normal text-stone-500 sm:inline">
+              · QR Menu
+            </span>
+          }
+        />
+        <TrackedWaitlistCta
+          slug={slug}
+          campaignQuery={campaignQuery}
+          position="nav"
+          variantTag={variant.tag}
+          className="border-0 bg-transparent p-0 font-inherit text-base font-semibold text-amber-800 hover:text-amber-900 active:text-amber-950 sm:text-sm"
+        >
+          Join waitlist →
+        </TrackedWaitlistCta>
+      </LandingHeader>
+
+      <LandingMainWide>
+        <div className="grid min-w-0 items-start gap-10 sm:gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
+          <div className="min-w-0">
+            <p className="mb-4 text-sm font-semibold uppercase tracking-widest text-amber-800/90">
+              For restaurants & cafés
+            </p>
+            <h1 className="mb-5 break-words text-3xl font-bold leading-[1.12] tracking-tight text-stone-900 sm:text-4xl lg:text-[2.65rem]">
+              {variant.headline}
+            </h1>
+            <p className="mb-8 max-w-xl break-words text-base leading-relaxed text-stone-600 sm:mb-9 sm:text-lg">
+              {variant.subheadline}
+            </p>
+            <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center">
+              <TrackedWaitlistCta
+                slug={slug}
+                campaignQuery={campaignQuery}
+                position="hero"
+                variantTag={variant.tag}
+                ctaLabel={variant.cta}
+                className="inline-flex w-full touch-manipulation items-center justify-center rounded-xl bg-amber-600 px-8 py-4 text-base font-semibold text-white shadow-md shadow-amber-900/15 transition-colors duration-200 ease-out hover:bg-amber-700 active:bg-amber-800 sm:w-auto sm:text-lg"
+              >
+                {variant.cta}
+              </TrackedWaitlistCta>
+              <span className="self-center text-center text-sm text-stone-500 sm:self-auto sm:text-left">
+                €9/mo · No card to browse the waitlist
               </span>
-            }
-          />
-          <TrackedWaitlistCta
-            slug={slug}
-            campaignQuery={campaignQuery}
-            position="nav"
-            variantTag={variant.tag}
-            className="text-sm font-semibold text-amber-800 hover:text-amber-900 transition-colors bg-transparent border-0 p-0 font-inherit"
-          >
-            Join waitlist →
-          </TrackedWaitlistCta>
-        </div>
-      </header>
-
-      <main className="flex-1">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-14 sm:py-20">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start lg:items-center">
-            <div>
-              <p className="text-amber-800/90 text-sm font-semibold uppercase tracking-widest mb-4">
-                For restaurants & cafés
-              </p>
-              <h1 className="text-4xl sm:text-5xl lg:text-[2.65rem] font-bold text-stone-900 leading-[1.12] tracking-tight mb-5">
-                {variant.headline}
-              </h1>
-              <p className="text-lg text-stone-600 leading-relaxed mb-9 max-w-xl">
-                {variant.subheadline}
-              </p>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-10">
-                <TrackedWaitlistCta
-                  slug={slug}
-                  campaignQuery={campaignQuery}
-                  position="hero"
-                  variantTag={variant.tag}
-                  ctaLabel={variant.cta}
-                  className="inline-flex items-center justify-center bg-amber-600 hover:bg-amber-700 text-white font-semibold text-lg px-8 py-4 rounded-xl transition-colors shadow-md shadow-amber-900/15"
-                >
-                  {variant.cta}
-                </TrackedWaitlistCta>
-                <span className="text-stone-500 text-sm">
-                  €9/mo · No card to browse the waitlist
-                </span>
-              </div>
-              <ul className="space-y-4 text-stone-700">
-                {variant.benefits.map((line, i) => (
-                  <li key={i} className="flex gap-3 items-start">
-                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-amber-600 shrink-0" />
-                    <span className="leading-relaxed">{line}</span>
-                  </li>
-                ))}
-              </ul>
             </div>
+            <LandingDotBenefitsList
+              lines={variant.benefits}
+              rowClassName="text-stone-700"
+              bulletClassName="mt-2 h-1.5 w-1.5 bg-amber-600"
+            />
+          </div>
 
-            <div className="relative flex flex-col items-center lg:items-end">
-              <div
-                className="absolute inset-0 bg-amber-200/25 blur-3xl rounded-full scale-110 pointer-events-none -z-10"
-                aria-hidden
-              />
-              <div className="w-full max-w-sm space-y-5">
-                <MenuQrIllustration />
-                <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm shadow-stone-900/5">
-                  <p className="text-stone-500 text-xs font-medium uppercase tracking-wider mb-2">
-                    Tonight&apos;s service
-                  </p>
-                  <p className="text-stone-900 font-semibold">Menu v3 · uploaded 6:12 PM</p>
-                  <p className="text-stone-600 text-sm mt-1.5 leading-snug">
-                    Every table QR already points at the latest PDF — no reprints.
-                  </p>
-                </div>
+          <div className="relative flex min-w-0 flex-col items-center lg:items-end">
+            <div
+              className="pointer-events-none absolute inset-0 -z-10 scale-110 rounded-full bg-amber-200/25 blur-3xl"
+              aria-hidden
+            />
+            <div className="w-full max-w-sm space-y-5">
+              <MenuQrIllustration />
+              <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm shadow-stone-900/5">
+                <p className="mb-2 text-xs font-medium uppercase tracking-wider text-stone-500">
+                  Tonight&apos;s service
+                </p>
+                <p className="font-semibold text-stone-900">Menu v3 · uploaded 6:12 PM</p>
+                <p className="mt-1.5 text-sm leading-snug text-stone-600">
+                  Every table QR already points at the latest PDF — no reprints.
+                </p>
               </div>
             </div>
           </div>
         </div>
-      </main>
+      </LandingMainWide>
 
-      <footer className="border-t border-stone-200 bg-white/60 px-5 sm:px-8 py-8 mt-auto">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-stone-600 text-sm">
-          <span className="inline-flex items-baseline gap-1.5">
-            <span>© 2025</span>
-            <BrandLogo tone="mutedLight" size="sm" />
-          </span>
-          <span>
-            Questions?{" "}
-            <TrackedContactEmailLink
-              slug={slug}
-              className="text-amber-800 hover:text-amber-900 underline underline-offset-2"
-            >
-              sara@getsolvedit.com
-            </TrackedContactEmailLink>
-          </span>
-        </div>
-      </footer>
+      <LandingFooter
+        slug={slug}
+        className="border-t border-stone-200 bg-white/60"
+        rowClassName="text-sm text-stone-600"
+        brandTone="mutedLight"
+        contactLinkClassName="text-amber-800 underline underline-offset-2 hover:text-amber-900"
+      />
     </div>
   );
 }

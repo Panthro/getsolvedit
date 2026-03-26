@@ -8,6 +8,7 @@ const outfit = Outfit({
   variable: "--font-brand",
   display: "swap",
   weight: ["600", "700", "800"],
+  adjustFontFallback: true,
 });
 
 export const metadata: Metadata = {
@@ -17,6 +18,7 @@ export const metadata: Metadata = {
 export const viewport = {
   width: "device-width" as const,
   initialScale: 1,
+  viewportFit: "cover" as const,
 };
 
 export default function RootLayout({

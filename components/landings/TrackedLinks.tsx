@@ -7,6 +7,14 @@ import { useWaitlistModal } from "@/components/WaitlistModalProvider";
 import type { CampaignQuery } from "@/lib/campaign-query";
 import { buildTallyHref } from "@/lib/tally";
 
+const FOCUS_RING =
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2";
+
+const NAV_TOUCH =
+  "touch-manipulation inline-flex items-center justify-center min-h-[44px] px-2 -mx-2 sm:px-3 sm:-mx-3 rounded-md transition-colors duration-200 ease-out";
+
+const HERO_FOCUS = "focus-visible:rounded-xl";
+
 type TrackedWaitlistLinkProps = {
   href: string;
   slug: string;
@@ -27,12 +35,22 @@ export function TrackedWaitlistLink({
   className,
   children,
 }: TrackedWaitlistLinkProps) {
+  const touchAndFocus =
+    position === "nav" ? `${NAV_TOUCH} ${FOCUS_RING}` : FOCUS_RING;
+
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={className}
+      className={[
+        className,
+        "touch-manipulation duration-200 ease-out",
+        touchAndFocus,
+        position === "hero" ? HERO_FOCUS : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
       onClick={() =>
         posthog.capture("waitlist_cta_clicked", {
           slug,
@@ -76,11 +94,21 @@ export function TrackedWaitlistCta({
     [slug, campaignQuery]
   );
 
+  const touchAndFocus =
+    position === "nav" ? `${NAV_TOUCH} ${FOCUS_RING}` : `${FOCUS_RING} ${HERO_FOCUS}`;
+
   if (modal) {
     return (
       <button
         type="button"
-        className={[className, "cursor-pointer"].filter(Boolean).join(" ")}
+        aria-haspopup="dialog"
+        className={[
+          className,
+          "cursor-pointer touch-manipulation duration-200 ease-out",
+          touchAndFocus,
+        ]
+          .filter(Boolean)
+          .join(" ")}
         onClick={() => modal.openWaitlist({ position, ctaLabel })}
       >
         {children}
@@ -116,7 +144,13 @@ export function TrackedContactEmailLink({
   return (
     <a
       href="mailto:sara@getsolvedit.com"
-      className={className}
+      className={[
+        className,
+        "inline-flex min-h-[44px] touch-manipulation items-center justify-center rounded-md transition-colors duration-200 ease-out",
+        FOCUS_RING,
+      ]
+        .filter(Boolean)
+        .join(" ")}
       onClick={() => posthog.capture("contact_email_clicked", { slug })}
     >
       {children}

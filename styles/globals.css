@@ -1,3 +1,48 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Horizontal padding that respects notches (iOS) + matches px-5 / sm:px-8 rhythm */
+@layer components {
+  .page-x {
+    padding-left: max(1.25rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1.25rem, env(safe-area-inset-right, 0px));
+  }
+
+  @media (min-width: 640px) {
+    .page-x {
+      padding-left: max(2rem, env(safe-area-inset-left, 0px));
+      padding-right: max(2rem, env(safe-area-inset-right, 0px));
+    }
+  }
+
+  /* Waitlist modal overlay: min gutter + safe-area insets */
+  .modal-overlay-pad {
+    padding-top: max(1rem, env(safe-area-inset-top, 0px));
+    padding-right: max(1rem, env(safe-area-inset-right, 0px));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+    padding-left: max(1rem, env(safe-area-inset-left, 0px));
+  }
+
+  @media (min-width: 640px) {
+    .modal-overlay-pad {
+      padding-top: max(1.5rem, env(safe-area-inset-top, 0px));
+      padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
+      padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
+      padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
+    }
+  }
+
+  /* Lighter paint cost when users prefer reduced transparency (also drops blur on low-power devices). */
+  .modal-backdrop {
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .modal-backdrop {
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+  }
+}
