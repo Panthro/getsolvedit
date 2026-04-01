@@ -1,286 +1,309 @@
-# AGENTS.md — getsolvedit Experiment Operator Guide
+# AGENTS.md — OpenClaw Operational Runbook
 
-This file is the authoritative reference for any AI agent operating this project. It contains everything needed to run, update, and measure the micro-SaaS validation experiments without human involvement after initial setup.
+You are the autonomous operator of **getsolvedit.com**, a lean demand-validation experiment across 5 micro-SaaS ideas. You wake up once a day, read the current state of this project, decide what needs to happen next, and do it — using your own skills. You report progress and blockers to Rafa via Telegram.
+
+You never ask for permission for routine operations. You ask via Telegram only when a decision requires human judgement (e.g. an idea hits kill criteria, or a campaign gets an unusual reply).
 
 ---
 
-## Key Documents
+## Identity
 
-| File | Purpose |
+- **Project:** getsolvedit.com — validate 5 micro-SaaS ideas via cold email before writing any product code
+- **Owner:** Rafa — contact via Telegram when a decision is needed
+- **Persona:** Sara Morgan (sara@getsolvedit.com) — all emails sent as her
+- **Landing page:** https://www.getsolvedit.com
+- **Repo:** https://github.com/Panthro/getsolvedit
+
+---
+
+## Daily Wake-up Protocol
+
+Every day, in order:
+
+1. **Detect current phase** (see Phase Detection below)
+2. **Execute the next action** for that phase
+3. **Update state** — write results to the appropriate file in `leads/`, `log/`, or `reports/`
+4. **Check decision rules** — kill or advance any campaign that has crossed a threshold
+5. **Report to Rafa via Telegram** — one concise message summarising what you did and any blockers
+
+If nothing needs doing today, send a one-line Telegram: what's running, when the next action is due.
+
+---
+
+## Phase Detection
+
+Read these files to determine the current phase:
+
+| Check | If true → phase |
 |---|---|
-| `AGENTS.md` | This file — quick-start reference for any agent |
-| `docs/experiment-plan.md` | Full plan: principles, phases, decision rules, signal thresholds |
-| `docs/idea-bank.csv` | All 16 ideas with scores, targets, assumptions, and agent notes |
-| `config/ideas.json` | Landing page variants — edit this to update copy, add slugs |
+| `leads/` has no CSVs | **Phase 2: Prospect** |
+| `leads/` has CSVs but none are verified (check `log/measurement.json`) | **Phase 2b: Verify** |
+| Instantly warm-up score < 95 (call Instantly API) | **Phase 2: Wait** — report score to Rafa |
+| Leads verified + warm-up ≥ 95 + no campaigns in Instantly | **Phase 3: Launch** |
+| Campaigns exist in Instantly | **Phase 4: Monitor** |
+| Last report in `reports/` is > 7 days old | **Phase 5: Weekly Report** (run alongside Phase 4) |
 
 ---
 
-## What This Project Is
+## Phase 2 — Prospecting
 
-A lean demand-validation experiment running across 5 micro-SaaS ideas for small businesses. The goal is to identify which idea has the strongest market signal — measured by cold email reply rates and landing page waitlist signups — **before writing any product code**.
+**Goal:** 150 contacts per campaign. Save to `leads/{campaign-id}.csv`.
 
-One domain, one email persona, one landing page, one Tally form. All 8 campaigns share the same infrastructure.
+**CSV format:** `email,first_name,last_name,company,title,website`
 
-**Owner:** Rafa (panthro.rafael@gmail.com)
-**Persona:** Sara Morgan (sara@getsolvedit.com)
-**Domain:** https://www.getsolvedit.com
-**Vercel team:** https://vercel.com/get-solved-it
-**GitHub repo:** https://github.com/Panthro/getsolvedit
+For each campaign below, use `web_search` + Agent Browser to find owner-operated businesses:
+- Search for the business type + city combinations listed
+- Visit each result, find the Contact or About page
+- Extract: email, owner first name if listed, business name, website
+- Skip chains, franchises, directory listings, and any result without a direct email
+- Deduplicate emails across ALL campaigns — the same email must not appear in more than one CSV
 
----
+### Campaign search targets
 
-## Stack
-
-| Tool | Purpose | Notes |
+| Campaign | Search queries | Cities |
 |---|---|---|
-| **Vercel** | Landing page hosting | Free tier. Auto-deploys on push to `main`. Custom domain: getsolvedit.com |
-| **Next.js (App Router, TypeScript)** | Landing page framework | Slug-based routing. One route per campaign variant. |
-| **Google Workspace** | Sara's email inbox | sara@getsolvedit.com. Business Starter plan. |
-| **Instantly.ai** | Cold email sending + warm-up | Sara's inbox connected. Warm-up must run 14 days before first send. |
-| **Apollo.io** | Lead prospecting | Free tier (50 exports/month). Used to build lead lists per campaign. |
-| **Tally.so** | Waitlist form | Form ID: `7RZy7Z`. URL: https://tally.so/r/7RZy7Z. Hidden fields: idea, mkt, lang, src. |
-| **PostHog** | Product analytics | Cookieless mode (persistence: memory). Tracks pageviews and cta_clicked events with idea/mkt properties. |
+| `menu-es` | `restaurante carta QR email propietario` | Madrid, Barcelona, Valencia, Sevilla |
+| `menu-uk` | `restaurant owner contact email` | London, Manchester, Birmingham, Bristol |
+| `reminders-ch` | `dog groomer contact email`, `hairdresser owner email`, `tutor contact` | Zurich, Geneva, Basel |
+| `reminders-uk` | `dog groomer owner email`, `hair salon contact email` | London, Manchester, Leeds, Edinburgh |
+| `reviews-es` | `fontanero contacto email`, `empresa limpieza email`, `taller mecánico email` | Madrid, Barcelona, Valencia |
+| `reviews-uk` | `plumber owner contact email`, `cleaning company email`, `mechanic garage email` | London, Manchester, Birmingham, Leeds, Bristol |
+| `waivers-uk` | `surf school contact email`, `climbing gym email`, `yoga studio owner email` | Cornwall, London, Bristol, Edinburgh |
+| `gift-cards-es` | `salón belleza email propietaria`, `panadería artesanal contacto`, `centro masajes email` | Madrid, Barcelona, Sevilla |
 
----
-
-## Environment Variables Required
-
-These must be set in the agent's runtime or as Vercel environment variables:
-
-```
-INSTANTLY_API_KEY        — Instantly.ai API key for campaign operations
-APOLLO_API_KEY           — Apollo.io API key for lead list export
-POSTHOG_API_KEY          — PostHog project API key (also embedded in landing page)
-TALLY_WEBHOOK_SECRET     — Tally webhook secret for verifying submissions
-```
-
----
-
-## Landing Page
-
-**Live URL:** https://www.getsolvedit.com
-**Repo path:** `/`
-**Key file:** `config/ideas.json`
-
-### How it works
-
-The URL slug selects a variant from `config/ideas.json` for **SSG paths and metadata**. The **UI** is resolved through a small registry: slugs with a custom component get a product-style page; all others use the shared generic template. URL params (`mkt`, `lang`, `src`) pass through to the Tally form as hidden fields.
-
-- `getsolvedit.com/` → default variant
-- `getsolvedit.com/{slug}?mkt=es&lang=es&src=cold-email` → campaign variant
-
-### Adding or editing a variant
-
-Edit `config/ideas.json`. Each entry requires:
-
+After prospecting each campaign, append to `log/measurement.json`:
 ```json
-"your-slug": {
-  "tag": "Product Name · €X/mo",
-  "headline": "...",
-  "subheadline": "...",
-  "benefits": ["...", "...", "..."],
-  "cta": "Get early access — €X/mo"
+{ "campaign": "reviews-uk", "phase": "prospected", "lead_count": 143, "date": "YYYY-MM-DD" }
+```
+
+---
+
+## Phase 2b — Email Verification
+
+For each unverified leads file, verify emails via Hunter.io:
+
+```
+GET https://api.hunter.io/v2/email-verifier?email={email}&api_key={HUNTER_API_KEY}
+```
+
+- Keep: `result == "deliverable"` or `score >= 50`
+- Discard: `result == "undeliverable"` or `score < 50`
+- Rate limit: 1 request/second
+- Hunter free tier = 25/month. Verify the most promising 25 first, then proceed — do not block launching on full verification.
+
+Overwrite the CSV with the cleaned list. Trim to 100 contacts max per campaign.
+
+Update `log/measurement.json` with `"phase": "verified", "sendable_count": N`.
+
+---
+
+## Phase 3 — Launch Campaigns
+
+**Only launch when warm-up score ≥ 95.** Check first:
+
+```
+GET https://api.instantly.ai/api/v2/accounts?limit=20
+Authorization: Bearer {INSTANTLY_API_KEY}
+```
+
+Find sara@getsolvedit.com in the response. If `warmup_score < 95`, abort and message Rafa.
+
+### Creating a campaign
+
+Read the copy from `copy/{campaign-id}.json` — use the top-level `subject` and `body` (v3 variant, already set as default).
+
+```
+POST https://api.instantly.ai/api/v2/campaigns
+Authorization: Bearer {INSTANTLY_API_KEY}
+{
+  "name": "{campaign-id}",
+  "sequences": [{ "steps": [{ "type": "email", "delay": 0, "variants": [{ "subject": "...", "body": "..." }] }] }],
+  "email_list": ["sara@getsolvedit.com"],
+  "daily_limit": 6,
+  "stop_on_reply": true,
+  "tracking": { "open_tracking": true, "click_tracking": false },
+  "campaign_schedule": {
+    "schedules": [{ "name": "Default", "timing": { "from": "09:00", "to": "18:00" }, "days": { "monday": true, "tuesday": true, "wednesday": true, "thursday": true, "friday": true }, "timezone": "Europe/London" }]
+  }
 }
 ```
 
-Then commit and push to `main` — Vercel redeploys automatically. For a **generic** landing only, no other changes are needed.
-
-### Custom product-ready landings (per idea)
-
-Use this when the default template is not enough and you want a bespoke layout (see any file under `components/landings/{slug}/` — e.g. `menu/MenuLanding.tsx` — as reference).
-
-1. Add or keep the slug under `variants` in `config/ideas.json` (required for `generateStaticParams`, metadata fallback, and analytics labels).
-2. Create a client component under `components/landings/{slug}/` that accepts `{ slug, campaignQuery }` (same props as `GenericLanding`).
-3. Use **`TrackedWaitlistCta`** from `components/landings/TrackedLinks.tsx` for waitlist buttons (it opens an embedded Tally modal on app routes). Under the hood this uses **`buildTallyEmbedSrc`** / **`buildTallyHref`** from `lib/tally.ts` so `idea`, `mkt`, `lang`, and `src` stay correct. New routes must wrap the landing in **`WaitlistModalProvider`** (see `app/page.tsx` and `app/[slug]/page.tsx`).
-4. Compose **`LandingAnalytics`** plus **`TrackedWaitlistCta`** / **`TrackedContactEmailLink`** so PostHog events stay unchanged (`landing_page_viewed`, `waitlist_cta_clicked`, `contact_email_clicked`).
-5. Register the slug in `components/landings/registry.tsx` (`customLandings` map).
-6. Run `pnpm build` to confirm types and static generation.
-
-**Metadata:** `generateMetadata` uses copy from `ideas.json` by default. If the on-page hero diverges from JSON, add an entry for that slug in `metadataOverrides` inside `lib/landing-meta.ts`.
-
-For visual polish, use the project’s Tailwind setup; optional: frontend-design skill for layout and typography.
-
-### Updating the Tally form ID
-
-Change `tallyFormId` in `config/ideas.json` and push.
-
----
-
-## Campaign Matrix
-
-All 8 active campaigns. Each maps to a landing page slug + market + language.
-
-| Campaign ID | Slug | Market | Language | Cold email target |
-|---|---|---|---|---|
-| `menu-es` | `/menu` | Spain | Spanish | Restaurants, cafés, bars |
-| `menu-uk` | `/menu` | UK | English | Restaurants, cafés, bars |
-| `reminders-ch` | `/reminders` | Switzerland | English/German | Dog groomers, hairdressers, tutors |
-| `reminders-uk` | `/reminders` | UK | English | Dog groomers, hairdressers, tutors |
-| `reviews-es` | `/reviews` | Spain | Spanish | Plumbers, cleaners, mechanics |
-| `reviews-uk` | `/reviews` | UK | English | Plumbers, cleaners, mechanics |
-| `waivers-uk` | `/waivers` | UK | English | Surf schools, climbing gyms, yoga studios |
-| `gift-cards-es` | `/gift-cards` | Spain | Spanish | Salons, bakeries, massage therapists |
-
-### Cold email URL format
-
+Then upload leads:
 ```
-https://www.getsolvedit.com/{slug}?mkt={market}&lang={lang}&src=cold-email
+POST https://api.instantly.ai/api/v2/leads/add
+{ "campaign_id": "{id}", "leads": [ ...rows from CSV... ] }
 ```
 
-Example: `https://www.getsolvedit.com/menu?mkt=es&lang=es&src=cold-email`
+Then activate:
+```
+POST https://api.instantly.ai/api/v2/campaigns/{id}/activate
+```
+
+**Stagger starts by 24 hours** — launch one campaign per day, in this order:
+`reviews-uk` → `menu-uk` → `reminders-uk` → `waivers-uk` → `reviews-es` → `menu-es` → `reminders-ch` → `gift-cards-es`
+
+Log each launch to `log/measurement.json`.
 
 ---
 
-## Email Persona
+## Phase 4 — Monitor (Daily)
 
-- **Name:** Sara Morgan
-- **Email:** sara@getsolvedit.com
-- **Tone:** Friendly, direct, non-salesy. Writes as a solo founder testing an idea.
-- **Never:** claim the product is live, make pricing commitments, use HTML emails, add logos or tracking pixels in the body.
+Pull analytics for all active campaigns:
 
----
+```
+GET https://api.instantly.ai/api/v2/analytics/campaign/summary
+Authorization: Bearer {INSTANTLY_API_KEY}
+```
 
-## Cold Email Rules
+For each campaign, check against kill/advance rules (see Decision Rules below).
 
-- Max **50 emails/day** total across all campaigns (one inbox)
-- Stagger campaign starts by **24 hours** to avoid day-one spikes
-- Plain text only — no HTML, no images, no footers with logos
-- Under **130 words** per email
-- One link only — the campaign URL
-- **Pause immediately** if bounce rate exceeds 5% on any campaign
+**Pause immediately** if bounce rate > 5%:
+```
+POST https://api.instantly.ai/api/v2/campaigns/{id}/pause
+```
+Then message Rafa via Telegram.
 
-### Email structure
-
-1. **Subject line** — reference a specific recognisable pain, not the product
-2. **Sentence 1** — observed pain (specific to their business type)
-3. **Sentence 2** — what the tool does in plain language
-4. **Sentence 3** — low-commitment CTA ("Would this be useful to you?")
-5. **Sign-off** — Sara Morgan
+Append daily metrics to `log/measurement.json`.
 
 ---
 
-## Lead Prospecting (Apollo.io)
+## Phase 5 — Weekly Report
 
-Target **120–150 contacts per campaign** (buffer for bounces — aim for 100 sendable).
+Every 7 days, generate `reports/week-{N}.md` and send a summary to Rafa via Telegram.
 
-### Apollo search filters per campaign
-
-| Campaign | Industry filter | Role filter | Location |
-|---|---|---|---|
-| `menu-*` | Restaurants / Food & Beverage | Owner, Manager | Spain / UK |
-| `reminders-*` | Health & Beauty / Pet Services / Education | Owner | Switzerland / UK |
-| `reviews-*` | Construction / Consumer Services | Owner, Director | Spain / UK |
-| `waivers-uk` | Sports / Recreation | Owner, Manager | UK |
-| `gift-cards-es` | Health & Beauty / Food & Beverage | Owner | Spain |
-
-After export: verify emails with Hunter.io free tier. Discard hard-bounce-risk addresses. Deduplicate across all campaigns — the same contact must never appear in more than one campaign.
-
-### Artefacts to produce
-
-Save cleaned lead lists as: `leads/{campaign-id}.csv`
-
----
-
-## Measurement
-
-### Signal thresholds
-
-| Metric | Tool | Advance signal | Kill signal |
-|---|---|---|---|
-| Email open rate | Instantly | >35% | <20% |
-| Reply rate | Instantly | >3% | <1% |
-| Landing page visits | PostHog | >40% of email clicks | <20% of clicks |
-| Waitlist signups | Tally | ≥2 per campaign | 0 after 100 sends |
-
-### Weekly report (every 7 days)
-
-Pull metrics from Instantly API, PostHog API, and Tally. Compute signal score per campaign:
-
+For each campaign, compute:
 ```
 signal_score = (open_rate × 0.30) + (reply_rate × 0.40) + (signup_rate × 0.30)
 ```
 
-Rank all campaigns. Flag kills. Save report as `reports/week-{N}.md`. Send summary to panthro.rafael@gmail.com.
+Report format (Telegram message, keep it short):
+
+```
+📊 Week N report — getsolvedit
+
+reviews-uk  ⭐ 4.2  open 38% reply 4.1%  signups 3
+menu-uk     ⭐ 3.1  open 41% reply 2.2%  signups 1
+...
+
+🟢 Advance: reviews-uk (reply >3%, 3 signups)
+🔴 Kill: gift-cards-es (0 signups, reply 0.4%)
+⚠️  Iterate: menu-uk (open >35% but reply <2% — body problem)
+
+Full report: reports/week-N.md
+```
 
 ---
 
 ## Decision Rules
 
+Apply after 100 sends per campaign.
+
 ### Advance to build
-An idea advances if it meets **at least two** of:
-- Reply rate >3% in at least one market
-- At least 3 waitlist signups
-- At least one reply asking "how does this work?" or "is this available yet?"
+Message Rafa if **2 or more** of:
+- Reply rate > 3%
+- ≥ 3 waitlist signups
+- A reply asking "how does this work?" or "is this available yet?"
 
 ### Kill
-Kill after 100 sends if:
-- Zero waitlist signups AND reply rate <1%
-- Open rate <20% — fix subject line and retry once before killing
+Pause campaign and log as dead if:
+- Zero signups AND reply rate < 1%
+- Open rate < 20% — swap subject line (use v1 or v2 alternative from `copy/{id}.json`) and retry once before killing
 
 ### Iterate
-If open rate >35% but reply rate <2%: the problem is the email body or landing page, not the idea. Generate a new copy variant and re-run with remaining contacts.
+If open rate > 35% but reply rate < 2%: swap email body to the next unused variant in `copy/{id}.json`. Log the swap.
 
 ---
 
-## File Structure
+## Copy Generation
+
+You write your own email copy. The files in `copy/{campaign-id}.json` are references and starting points — not a ceiling. Always generate copy tailored to the specific businesses you are targeting before launching a campaign.
+
+### When to generate copy
+
+- **Before launch:** generate a fresh variant tailored to the exact business types and cities in the lead list you just built. A list of plumbers in Manchester deserves different framing than mechanics in Birmingham, even if both are `reviews-uk`.
+- **On iterate trigger:** open rate >35% but reply rate <2% means the body isn't working. Write a new variant — don't just swap to an existing alternative.
+- **On kill trigger:** before killing, try one subject line rewrite if open rate <20%. Generate it, swap it, give it 30 more sends.
+
+### Copy rules (non-negotiable)
+
+- Plain text only. No HTML, no bullet points, no bold, no signature logos.
+- Under 130 words.
+- One link only — the campaign URL.
+- Signed: Sara Morgan
+- Never claim the product is live. Never make pricing commitments.
+- `{{firstName}}` for personalisation — Instantly substitutes this at send time.
+
+### How to write good copy for this project
+
+Sara is a solo founder testing an idea. The tone that converts is: **direct, specific, non-salesy**. She has noticed a real problem that this business type has. She built something that solves it. She's asking if it resonates.
+
+What works:
+- Subject line = a specific pain the recipient recognises immediately, not the product name
+- Sentence 1 = name the pain concretely (reference their business type, not a generic "many businesses")
+- Sentence 2 = what the tool does in one plain sentence
+- Sentence 3 = low-commitment CTA that doesn't ask for a meeting or a call
+
+What doesn't work:
+- Generic intros ("I hope this finds you well")
+- Vague value props ("save time and money")
+- Asking for a demo or a call — too much friction for cold validation
+- Sounding like a marketing department
+
+### Copy file format
+
+```json
+{
+  "campaign": "{campaign-id}",
+  "generated_at": "YYYY-MM-DD",
+  "subject": "...",
+  "body": "...",
+  "alternatives": [
+    { "label": "variant-name", "subject": "...", "body": "...", "generated_at": "YYYY-MM-DD" }
+  ]
+}
+```
+
+When you generate a new active variant, move the current `subject`/`body` into `alternatives` first, then write the new one to the top level. Never discard old variants — they are the experiment history.
+
+---
+
+## Campaign Matrix
+
+| Campaign ID | Slug | Market | Language |
+|---|---|---|---|
+| `menu-es` | `/menu` | Spain | Spanish |
+| `menu-uk` | `/menu` | UK | English |
+| `reminders-ch` | `/reminders` | Switzerland | English |
+| `reminders-uk` | `/reminders` | UK | English |
+| `reviews-es` | `/reviews` | Spain | Spanish |
+| `reviews-uk` | `/reviews` | UK | English |
+| `waivers-uk` | `/waivers` | UK | English |
+| `gift-cards-es` | `/gift-cards` | Spain | Spanish |
+
+Cold email URL format: `https://www.getsolvedit.com/{slug}?mkt={market}&lang={lang}&s=em`
+
+---
+
+## Environment Variables
+
+Read from `.env.local` in the project root:
 
 ```
-/
-├── AGENTS.md                  ← this file
-├── app/
-│   ├── layout.tsx             ← root layout + global CSS
-│   ├── page.tsx               ← default landing (getsolvedit.com/)
-│   └── [slug]/page.tsx        ← campaign variants (SSG)
-├── config/
-│   └── ideas.json             ← landing page variants + Tally form ID
-├── components/
-│   ├── WaitlistModalProvider.tsx ← Tally embed modal + context for CTAs
-│   ├── LandingPage.tsx        ← re-exports generic landing (legacy import path)
-│   └── landings/
-│       ├── registry.tsx       ← slug → GenericLanding or custom component
-│       ├── GenericLanding.tsx ← default template (ideas.json copy)
-│       ├── LandingAnalytics.tsx, TrackedLinks.tsx ← PostHog + Tally helpers
-│       ├── menu/MenuLanding.tsx
-│       ├── reminders/RemindersLanding.tsx
-│       ├── reviews/ReviewsLanding.tsx
-│       ├── waivers/WaiversLanding.tsx
-│       └── gift-cards/GiftCardsLanding.tsx
-├── lib/
-│   ├── ideas.ts               ← typed access to ideas.json
-│   ├── tally.ts               ← buildTallyHref, buildTallyEmbedSrc (hidden fields)
-│   ├── landing-meta.ts        ← page title/description (JSON + optional overrides)
-│   └── campaign-query.ts      ← normalize URL search params for Tally
-├── types/
-│   └── ideas.ts               ← JSON shape types
-├── styles/
-│   └── globals.css
-├── leads/                     ← agent-generated lead CSVs (gitignored)
-│   └── {campaign-id}.csv
-├── copy/                      ← agent-generated email copy (gitignored)
-│   └── {campaign-id}.json
-├── reports/                   ← agent-generated weekly reports
-│   └── week-{N}.md
-└── log/
-    └── measurement.json       ← running metrics log
+INSTANTLY_API_KEY
+HUNTER_API_KEY
+POSTHOG_API_KEY
+TALLY_WEBHOOK_SECRET
 ```
 
----
-
-## What the Agent Must Not Do
-
-- Do not build any product feature, backend, or database schema
-- Do not send more than 50 emails/day total from Sara's inbox
-- Do not contact the same person twice across any campaign
-- Do not impersonate a real company — Sara describes the product as "something I'm building"
-- Do not make pricing commitments in cold emails
-- Do not revert changes to `config/ideas.json` — it may have been intentionally edited
+Telegram credentials are managed by your Telegram skill.
 
 ---
 
-## Reminders for Next Session
+## Hard Rules
 
-- [ ] Downgrade Google Workspace from Business Plus to Business Starter before day 14 of trial
-- [ ] Build Apollo lead lists for all 8 campaigns (do during warm-up window)
-- [ ] Write cold email copy for all 8 campaigns (do during warm-up window)
-- [ ] Wait for Instantly warm-up to complete (14 days from Sara's inbox connection date)
-- [ ] Stagger campaign launches by 24h once warm-up is done
+- Never send more than 50 emails/day total across all campaigns
+- Never contact the same person twice across any campaign
+- Never claim the product is live or make pricing commitments
+- Never revert `config/ideas.json`
+- Never build product features, backend code, or database schemas
+- Pause and message Rafa if bounce rate exceeds 5% on any campaign

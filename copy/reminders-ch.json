@@ -1,0 +1,17 @@
+{
+  "campaign": "reminders-ch",
+  "subject": "Fewer no-shows. No chasing. Just one automated text.",
+  "body": "Hi {{firstName}},\n\nGetSolvedIt sends your clients an automatic SMS reminder before every appointment. You set it up once, it runs on its own, and empty slots stop being a surprise.\n\nNo app for clients. No complicated setup.\n\nhttps://www.getsolvedit.com/reminders?mkt=ch&lang=en&s=em\n\nSara Morgan",
+  "alternatives": [
+    {
+      "label": "v1-founder",
+      "subject": "Still getting last-minute no-shows?",
+      "body": "Hi {{firstName}},\n\nI'm building a simple SMS reminder tool for appointment businesses — add a booking, your client gets an automatic text reminder before they're due. Nothing for them to install.\n\nWould this be useful to you?\n\nhttps://www.getsolvedit.com/reminders?mkt=ch&lang=en&s=em\n\nSara Morgan"
+    },
+    {
+      "label": "v2-soft-launch",
+      "subject": "Automated SMS reminders for your bookings",
+      "body": "Hi {{firstName}},\n\nWe built a simple appointment reminder tool for service businesses: add a booking, pick a time, and your client gets an automatic SMS reminder. Nothing for them to install, nothing complicated for you.\n\nMost businesses using it see no-shows drop in the first few weeks.\n\nIf you'd like early access:\n\nhttps://www.getsolvedit.com/reminders?mkt=ch&lang=en&s=em\n\nSara Morgan"
+    }
+  ]
+}

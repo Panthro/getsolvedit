@@ -1,0 +1,17 @@
+{
+  "campaign": "menu-uk",
+  "subject": "How much do you spend reprinting menus each year?",
+  "body": "Hi {{firstName}},\n\nChange a price or add a dish and suddenly you're reprinting, or your QR code is out of date until someone complains.\n\nGetSolvedIt fixes it: upload your new menu PDF and your QR instantly shows the updated version. Two minutes, no designers, no printing.\n\nhttps://www.getsolvedit.com/menu?mkt=uk&lang=en&s=em\n\nSara Morgan",
+  "alternatives": [
+    {
+      "label": "v1-founder",
+      "subject": "The QR that's still showing last season's menu",
+      "body": "Hi {{firstName}},\n\nI'm building a tool for restaurants that solves one specific problem: update your menu PDF whenever you want and your QR code always points to the latest version. No reprinting, no redesign, no broken links.\n\nWould that be useful to you?\n\nhttps://www.getsolvedit.com/menu?mkt=uk&lang=en&s=em\n\nSara Morgan"
+    },
+    {
+      "label": "v2-soft-launch",
+      "subject": "Update your menu anytime — your QR never changes",
+      "body": "Hi {{firstName}},\n\nWe built a simple tool for restaurants: upload your updated menu PDF and your QR code instantly shows the new version. No reprinting, no redesign costs, no broken links.\n\nIf you'd like early access:\n\nhttps://www.getsolvedit.com/menu?mkt=uk&lang=en&s=em\n\nSara Morgan"
+    }
+  ]
+}

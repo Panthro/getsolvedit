@@ -1,0 +1,17 @@
+{
+  "campaign": "menu-es",
+  "subject": "¿Cuánto te cuesta actualizar la carta cada temporada?",
+  "body": "Hola {{firstName}},\n\nCambias un plato o un precio y toca imprimir de nuevo, pagar diseño o dejar el QR desactualizado hasta que alguien se queje.\n\nGetSolvedIt lo resuelve: subes el nuevo PDF y el QR de tu local ya muestra la versión correcta. Dos minutos, sin impresoras, sin diseñadores.\n\nhttps://www.getsolvedit.com/menu?mkt=es&lang=es&s=em\n\nSara Morgan",
+  "alternatives": [
+    {
+      "label": "v1-founder",
+      "subject": "El QR del menú que ya no cuadra con la carta",
+      "body": "Hola {{firstName}},\n\nEstoy construyendo una herramienta para restaurantes que resuelve algo concreto: actualizas el PDF de tu carta cuando quieras y el código QR siempre muestra la versión más reciente. Sin imprimir nada, sin cambiar el QR.\n\n¿Te sería útil algo así?\n\nhttps://www.getsolvedit.com/menu?mkt=es&lang=es&s=em\n\nSara Morgan"
+    },
+    {
+      "label": "v2-soft-launch",
+      "subject": "Actualiza la carta en segundos — el QR no cambia",
+      "body": "Hola {{firstName}},\n\nTenemos una herramienta para restaurantes: actualizas el PDF de tu carta cuando quieras y el código QR siempre muestra la versión actual. Sin imprimir, sin cambiar el QR, sin pagar diseño cada vez.\n\nSi te interesa verla o apuntarte a los primeros accesos:\n\nhttps://www.getsolvedit.com/menu?mkt=es&lang=es&s=em\n\nSara Morgan"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "campaign": "gift-cards-es",
+  "subject": "Tus clientes quieren comprar tarjetas regalo. ¿Pueden hacerlo?",
+  "body": "Hola {{firstName}},\n\nCon GetSolvedIt, tu negocio vende tarjetas regalo online en minutos. El cliente paga, recibe un código por email, y lo canjea contigo cuando quiera. Sin TPV, sin intermediarios.\n\nhttps://www.getsolvedit.com/gift-cards?mkt=es&lang=es&s=em\n\nSara Morgan",
+  "alternatives": [
+    {
+      "label": "v1-founder",
+      "subject": "¿Tienes forma fácil de vender tarjetas regalo?",
+      "body": "Hola {{firstName}},\n\nEstoy construyendo una herramienta para negocios locales: tus clientes pueden comprar una tarjeta regalo online, pagar con tarjeta, y recibir un código por email para canjear contigo.\n\n¿Te sería útil algo así?\n\nhttps://www.getsolvedit.com/gift-cards?mkt=es&lang=es&s=em\n\nSara Morgan"
+    },
+    {
+      "label": "v2-soft-launch",
+      "subject": "Vende tarjetas regalo online desde tu negocio — sin TPV",
+      "body": "Hola {{firstName}},\n\nTenemos una herramienta para negocios locales: tus clientes compran una tarjeta regalo online, pagan con tarjeta, y reciben un código por email que canjeáis juntos. Sin TPV adicional, sin complicaciones.\n\nSi te interesa probarlo:\n\nhttps://www.getsolvedit.com/gift-cards?mkt=es&lang=es&s=em\n\nSara Morgan"
+    }
+  ]
+}

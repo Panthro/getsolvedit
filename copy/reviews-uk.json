@@ -1,0 +1,17 @@
+{
+  "campaign": "reviews-uk",
+  "subject": "Every job you complete deserves a Google review",
+  "body": "Hi {{firstName}},\n\nMost customers don't leave reviews — not because they're unhappy, but because nobody asked them at the right moment.\n\nGetSolvedIt sends one automatic SMS after every job with a direct link to your Google profile. It compounds fast.\n\nhttps://www.getsolvedit.com/reviews?mkt=uk&lang=en&s=em\n\nSara Morgan",
+  "alternatives": [
+    {
+      "label": "v1-founder",
+      "subject": "Customers happy but still not leaving reviews?",
+      "body": "Hi {{firstName}},\n\nI'm building a simple tool for tradespeople: when you finish a job, it texts your customer a direct link to leave you a Google review. One tap for them, nothing to remember for you.\n\nWould this be useful to you?\n\nhttps://www.getsolvedit.com/reviews?mkt=uk&lang=en&s=em\n\nSara Morgan"
+    },
+    {
+      "label": "v2-soft-launch",
+      "subject": "Automatic Google review requests after every job",
+      "body": "Hi {{firstName}},\n\nWe built a simple tool for tradespeople: when you finish a job, it sends your customer an SMS with a direct link to leave you a Google review. One tap for them. Nothing to remember for you.\n\nIf you'd like early access:\n\nhttps://www.getsolvedit.com/reviews?mkt=uk&lang=en&s=em\n\nSara Morgan"
+    }
+  ]
+}

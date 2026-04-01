@@ -1,0 +1,17 @@
+{
+  "campaign": "waivers-uk",
+  "subject": "Replace your paper waivers with a link",
+  "body": "Hi {{firstName}},\n\nGetSolvedIt lets your participants sign their waiver before they arrive — on their phone, in under a minute. You get a signed record automatically. No paper, no clipboards, no queue at the door.\n\nWorks for surf schools, climbing gyms, yoga studios, escape rooms.\n\nhttps://www.getsolvedit.com/waivers?mkt=uk&lang=en&s=em\n\nSara Morgan",
+  "alternatives": [
+    {
+      "label": "v1-founder",
+      "subject": "Still doing paper waivers on the day?",
+      "body": "Hi {{firstName}},\n\nI'm building a digital waiver tool for activity businesses: send a link before the session, participants sign on their phone, and you get a signed record. No printing, no clipboards.\n\nWould this be useful to you?\n\nhttps://www.getsolvedit.com/waivers?mkt=uk&lang=en&s=em\n\nSara Morgan"
+    },
+    {
+      "label": "v2-soft-launch",
+      "subject": "Digital waivers sent before they arrive — no clipboards",
+      "body": "Hi {{firstName}},\n\nWe've built a digital waiver tool for activity businesses: send a link before the session, participants sign on their phones, and you get a signed record automatically. No printing, no delays at the door.\n\nIf you'd like early access:\n\nhttps://www.getsolvedit.com/waivers?mkt=uk&lang=en&s=em\n\nSara Morgan"
+    }
+  ]
+}

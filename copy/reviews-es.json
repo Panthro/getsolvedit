@@ -1,0 +1,17 @@
+{
+  "campaign": "reviews-es",
+  "subject": "Cada trabajo que haces merece una reseña en Google",
+  "body": "Hola {{firstName}},\n\nLa mayoría de clientes no dejan reseña aunque queden satisfechos — simplemente porque nadie se lo pidió en el momento justo.\n\nGetSolvedIt envía un SMS automático después de cada trabajo con un enlace directo a tu perfil de Google. Sin apps, sin recordatorios manuales.\n\nhttps://www.getsolvedit.com/reviews?mkt=es&lang=es&s=em\n\nSara Morgan",
+  "alternatives": [
+    {
+      "label": "v1-founder",
+      "subject": "¿Cuántos clientes satisfechos no te han dejado reseña en Google?",
+      "body": "Hola {{firstName}},\n\nEstoy construyendo una herramienta para negocios locales: cuando terminas un trabajo, envías un mensaje al cliente con un enlace directo a tu perfil de Google para que te deje una valoración.\n\n¿Te sería útil algo así?\n\nhttps://www.getsolvedit.com/reviews?mkt=es&lang=es&s=em\n\nSara Morgan"
+    },
+    {
+      "label": "v2-soft-launch",
+      "subject": "Consigue más reseñas en Google — automáticamente",
+      "body": "Hola {{firstName}},\n\nTenemos una herramienta para negocios locales: cuando terminas un trabajo, se envía un SMS al cliente con un enlace directo a tu perfil de Google. Un clic, sin complicaciones.\n\nLos negocios que la están usando ven un aumento claro en reseñas en las primeras semanas.\n\nSi te interesa:\n\nhttps://www.getsolvedit.com/reviews?mkt=es&lang=es&s=em\n\nSara Morgan"
+    }
+  ]
+}

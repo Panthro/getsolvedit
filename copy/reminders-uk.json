@@ -1,0 +1,17 @@
+{
+  "campaign": "reminders-uk",
+  "subject": "The simplest way to cut no-shows for your business",
+  "body": "Hi {{firstName}},\n\nGetSolvedIt sends your clients an automatic SMS before every appointment. You spend two minutes adding a booking — it handles the rest.\n\nNo more forgotten appointments. No more last-minute gaps you can't fill.\n\nhttps://www.getsolvedit.com/reminders?mkt=uk&lang=en&s=em\n\nSara Morgan",
+  "alternatives": [
+    {
+      "label": "v1-founder",
+      "subject": "How much do no-shows actually cost you each month?",
+      "body": "Hi {{firstName}},\n\nI'm building a lightweight SMS reminder tool for small appointment businesses: add a booking, it texts your client a reminder at the right time. No apps, no chasing people yourself.\n\nWould this be useful to you?\n\nhttps://www.getsolvedit.com/reminders?mkt=uk&lang=en&s=em\n\nSara Morgan"
+    },
+    {
+      "label": "v2-soft-launch",
+      "subject": "Appointment reminders by SMS — set up in minutes",
+      "body": "Hi {{firstName}},\n\nWe've built a lightweight SMS reminder tool for small appointment businesses: add a booking, it sends your client a reminder at the right time. No app downloads, no chasing people yourself.\n\nIf you'd like to try it early:\n\nhttps://www.getsolvedit.com/reminders?mkt=uk&lang=en&s=em\n\nSara Morgan"
+    }
+  ]
+}
